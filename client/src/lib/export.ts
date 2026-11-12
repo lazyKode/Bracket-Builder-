@@ -6,7 +6,7 @@ import {
   isRealMatch, matchesInScope, ordinal, roundLabel, scopeOfMatch, visibleMatches, TEAM_POINTS,
 } from "@shared/stats";
 import { BYE_H, CARD_H, CARD_W, COL_GAP, buildColumns, computeLayout } from "./bracket-layout";
-import { isNativeApp, saveBlob } from "./save-file";
+import { saveBlob, usesShareSheet } from "./save-file";
 
 type Details = Pick<TournamentWithDetails, "name" | "status" | "participants" | "matches" | "weightCategories" | "tableCount" | "createdAt">;
 
@@ -162,7 +162,7 @@ function openPrintWindow(title: string, body: string, extraCss = "", filename = 
   <button class="print-btn no-print" onclick="window.print()">Print or save as PDF</button>
   ${body}
 </body></html>`;
-  if (isNativeApp()) {
+  if (usesShareSheet()) {
     // The app has no pop-up windows: share the page as a file instead (open it to print or AirPrint).
     void saveBlob(new Blob([html], { type: "text/html" }), filename);
     return true;

@@ -5,6 +5,9 @@
 
 export const IS_LOCAL = import.meta.env.VITE_BACKEND === "local";
 
+/** The installable web version (GitHub Pages): offline build with "#/" addresses and a service worker. */
+export const IS_WEB_APP = IS_LOCAL && import.meta.env.VITE_ROUTER === "hash";
+
 // Loaded only in the offline build, so the server build does not carry it.
 const local = IS_LOCAL ? import("@/local/backend") : null;
 

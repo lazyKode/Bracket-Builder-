@@ -1,10 +1,21 @@
 // Hand a generated file (CSV, PDF, backup, printable page) to the user.
-//  - iPhone app: write it to the app's cache and open the share sheet
+//  - iPhone app (Capacitor): write it to the app's cache and open the share sheet
 //    (Save to Files, AirDrop, WhatsApp, Mail, Print...).
-//  - Browser: a normal download.
+//  - iPhone / iPad browser or Home Screen web app: the browser's own share sheet.
+//  - Anywhere else: a normal download.
 
 export function isNativeApp(): boolean {
   return !!(window as any).Capacitor?.isNativePlatform?.();
+}
+
+/** iPhone / iPad browser (including a web app added to the Home Screen). */
+export function isIOS(): boolean {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
+/** Where files are handed over through the share sheet instead of a download or a new window. */
+export function usesShareSheet(): boolean {
+  return isNativeApp() || isIOS();
 }
 
 function blobToBase64(blob: Blob): Promise<string> {
@@ -42,6 +53,8 @@ export async function saveBlob(blob: Blob, filename: string): Promise<void> {
       if (cancelled(err)) return;
       console.warn("Native share failed, trying the web share sheet", err);
     }
+  }
+  if (usesShareSheet()) {
     try {
       const file = new File([blob], filename, { type: blob.type });
       if (navigator.canShare?.({ files: [file] })) {

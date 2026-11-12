@@ -14,11 +14,15 @@ It runs in two ways from the same code:
 | Live link for spectators | No (big-screen view on the device only) | Yes, with QR code |
 | Emailed results | No | Yes, if an email key is set |
 
-## iPhone app (works offline)
+## On a phone (works offline)
 
-Every push to `main` builds an **unsigned IPA** on GitHub's hosted Mac, the same
-way as SetMetric. See [INSTALL-IPHONE.md](INSTALL-IPHONE.md) for downloading it
-and installing with Sideloadly on Windows.
+Two ways, both described in [INSTALL-IPHONE.md](INSTALL-IPHONE.md):
+
+- **Web app:** every push to `main` publishes the offline app to GitHub Pages at
+  https://lazykode.github.io/Bracket-Builder-/ . Open it once with internet, then
+  **Add to Home Screen**; after that it starts and runs with no connection.
+- **IPA:** every push to `main` also builds an **unsigned IPA** on GitHub's hosted
+  Mac, the same way as SetMetric, for installing with Sideloadly on Windows.
 
 In the app, tournaments are stored only on the phone. Use **On this device →
 Save a backup file** after each event; **Restore from a backup file** puts a
@@ -31,6 +35,7 @@ Requires Node.js 22 or newer.
 ```
 npm install
 npm run dev:app     # the offline app in your browser, no server at all
+npm run build:web   # the installable web version, into dist/web (host that folder anywhere)
 npm run dev         # the server version at http://localhost:5000
 ```
 
@@ -76,6 +81,7 @@ numbers and tables never clash. Run it after any change under `shared/`.
 - `server/` — Express: login and sessions, PostgreSQL or file storage, live-update streams, email. `routes.ts` just forwards HTTP requests to `shared/api.ts`.
 - `client/src/` — the React app. `lib/backend.ts` sends each request either to the server or, in the offline build (`VITE_BACKEND=local`), to `local/backend.ts`, which runs `shared/api.ts` inside the app and saves to the device (IndexedDB).
 - `capacitor.config.json`, `assets/`, `.github/workflows/build-iphone.yml` — the iPhone wrapper and its build.
+- `client/sw.template.js`, `client/public/manifest.webmanifest`, `.github/workflows/publish-web-app.yml` — the installable web version: a service worker stores the whole app on the device, and addresses use `#/` so it runs from any folder.
 
 ## Tournament rules in brief
 

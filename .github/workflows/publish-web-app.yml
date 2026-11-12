@@ -1,0 +1,60 @@
+name: Publish Bracket Builder Web App
+
+# Builds the offline app as a plain web page and publishes it to the gh-pages
+# branch, which GitHub Pages serves at https://<user>.github.io/<repo>/ .
+# Open that address on a phone and use "Add to Home Screen": no Sideloadly,
+# no 3-app limit, no 7-day re-signing.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-web-app.yml'
+      - 'client/**'
+      - 'shared/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.ts'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bracket-builder-web
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    name: Build and publish to GitHub Pages
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Get source
+        uses: actions/checkout@v4
+      - name: Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Type-check
+        run: npm run check
+      - name: Play ~1,400 simulated tournaments
+        run: npm run simulate
+      - name: Build the web app (works offline after the first visit)
+        run: npm run build:web
+      - name: Publish to the gh-pages branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd dist/web
+          test -f index.html && test -f sw.js
+          touch .nojekyll
+          git init -q -b gh-pages
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -q -m "Publish web app from ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" gh-pages
+          echo "Published. Site: https://${GITHUB_REPOSITORY_OWNER,,}.github.io/${GITHUB_REPOSITORY#*/}/"

@@ -7,7 +7,8 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { HardDriveDownload, HardDriveUpload, Smartphone } from "lucide-react";
+import { CloudDownload, HardDriveDownload, HardDriveUpload, RefreshCw, Smartphone, WifiOff } from "lucide-react";
+import { installUpdate, useOfflineCopy } from "@/lib/offline-copy";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
 import { localBackend } from "@/lib/backend";
@@ -22,6 +23,7 @@ export function LocalDataMenu() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [pendingRestore, setPendingRestore] = useState<{ name: string; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  const offlineCopy = useOfflineCopy();
 
   async function saveBackup() {
     setBusy(true);
@@ -69,12 +71,28 @@ export function LocalDataMenu() {
           <Button variant="outline" className="border-primary/20 hover:bg-primary/5" disabled={busy} data-testid="button-local-data">
             <Smartphone className="w-4 h-4 sm:mr-1.5" />
             <span className="hidden sm:inline">On this device</span>
+            {offlineCopy === "update" && <span className="ml-1.5 w-2 h-2 rounded-full bg-amber-500" aria-label="Update available" />}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-72">
           <DropdownMenuLabel className="font-normal text-xs text-muted-foreground leading-snug">
             Tournaments are stored only on this device and work with no internet. Save a backup after each event.
           </DropdownMenuLabel>
+          {offlineCopy === "preparing" && (
+            <DropdownMenuLabel className="font-normal text-xs flex items-center gap-2 text-amber-700" data-testid="offline-preparing">
+              <CloudDownload className="w-3.5 h-3.5 shrink-0" /> Saving the app for offline use… keep it open with internet for a moment.
+            </DropdownMenuLabel>
+          )}
+          {offlineCopy === "ready" && (
+            <DropdownMenuLabel className="font-normal text-xs flex items-center gap-2 text-emerald-700" data-testid="offline-ready">
+              <WifiOff className="w-3.5 h-3.5 shrink-0" /> Ready to use without internet.
+            </DropdownMenuLabel>
+          )}
+          {offlineCopy === "update" && (
+            <DropdownMenuItem onClick={installUpdate} data-testid="menu-install-update">
+              <RefreshCw className="w-4 h-4 mr-2 text-amber-600" /> Install the new version (keeps your tournaments)
+            </DropdownMenuItem>
+          )}
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={saveBackup} data-testid="menu-save-backup">
             <HardDriveDownload className="w-4 h-4 mr-2" /> Save a backup file

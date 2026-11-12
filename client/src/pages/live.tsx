@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "wouter";
+import { useParams, useRoute } from "wouter";
 import { queryClient } from "@/lib/queryClient";
 import { useLiveUpdates } from "@/hooks/use-live";
 import { IS_LOCAL } from "@/lib/backend";
@@ -286,7 +286,9 @@ function BigScreen({ tournament, connected, onExit }: { tournament: PublicTourna
 
 export default function LivePage() {
   const { token } = useParams<{ token: string }>();
-  const [tv, setTv] = useState(() => new URLSearchParams(window.location.search).get("tv") === "1");
+  // Big-screen mode: /live/<token>/tv (used inside the offline app) or /live/<token>?tv=1 (shared links).
+  const [tvRoute] = useRoute("/live/:token/tv");
+  const [tv, setTv] = useState(() => tvRoute || new URLSearchParams(window.location.search).get("tv") === "1");
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["/api/public", token] });
   const connected = useLiveUpdates(token ? `/api/public/${token}/stream` : null, refresh, refresh);

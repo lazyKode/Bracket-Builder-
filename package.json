@@ -9,6 +9,7 @@
     "start": "cross-env NODE_ENV=production node dist/index.cjs",
     "dev:app": "cross-env VITE_BACKEND=local vite --host",
     "build:app": "cross-env VITE_BACKEND=local vite build",
+    "build:web": "cross-env VITE_BACKEND=local VITE_ROUTER=hash vite build",
     "preview:app": "cross-env VITE_BACKEND=local vite preview --host",
     "check": "tsc",
     "simulate": "tsx script/simulate.ts",

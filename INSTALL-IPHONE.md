@@ -1,4 +1,30 @@
-# Install Bracket Builder on your iPhone (Windows + Sideloadly)
+# Bracket Builder on your iPhone
+
+There are two ways. Both work with no internet and keep tournaments on the phone.
+
+| | A. Web app (Add to Home Screen) | B. Sideloadly IPA |
+| --- | --- | --- |
+| Needs a computer | No | Yes, Windows + Sideloadly |
+| Counts toward the 3 free sideloaded apps | No | Yes |
+| Needs re-signing every 7 days | No | Yes |
+| First install needs internet | Yes, once | No |
+
+Each one keeps its **own** tournaments. Use **On this device → Save a backup file / Restore from a backup file** to move them from one to the other.
+
+# A. Web app: Add to Home Screen
+
+1. On the iPhone, open **Safari** and go to **https://lazykode.github.io/Bracket-Builder-/**
+2. Tap **On this device** (phone icon, top right) and wait until it says **Ready to use without internet**. This takes a few seconds the first time.
+3. Tap Safari's **Share** button → **Add to Home Screen** → **Add**.
+4. From now on open it from the **Brackets** icon, not from Safari. The icon keeps its own data, so tournaments made in the Safari tab do not appear there.
+
+Good to know:
+
+- When a newer version has been published, **On this device** shows **Install the new version**. Your tournaments are kept.
+- Removing the icon from the Home Screen deletes its tournaments. Save a backup first.
+- It also works on Android and on a computer: open the same address and use the browser's "Install" / "Add to Home screen".
+
+# B. Sideloadly IPA (Windows)
 
 Same routine as SetMetric.
 

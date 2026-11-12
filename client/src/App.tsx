@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
-import { Switch, Route, useLocation } from "wouter";
+import { Switch, Route, Router as AddressRouter, useLocation } from "wouter";
+import { useHashLocation } from "wouter/use-hash-location";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
@@ -13,7 +14,7 @@ import SplashScreen from "@/pages/splash";
 import AuthPage from "@/pages/auth";
 import AthletesPage from "@/pages/athletes";
 import LivePage from "@/pages/live";
-import { IS_LOCAL } from "@/lib/backend";
+import { IS_LOCAL, IS_WEB_APP } from "@/lib/backend";
 
 function Router() {
   return (
@@ -38,6 +39,7 @@ function AppContent() {
   if (location.startsWith("/live/")) {
     return (
       <Switch>
+        <Route path="/live/:token/tv" component={LivePage} />
         <Route path="/live/:token" component={LivePage} />
         <Route component={NotFound} />
       </Switch>
@@ -79,7 +81,14 @@ function App() {
       <AuthProvider>
         <TooltipProvider>
           <Toaster />
-          <AppContent />
+          {/* The web version keeps the page address after "#" so it works from any folder on a static host. */}
+          {IS_WEB_APP ? (
+            <AddressRouter hook={useHashLocation}>
+              <AppContent />
+            </AddressRouter>
+          ) : (
+            <AppContent />
+          )}
         </TooltipProvider>
       </AuthProvider>
     </QueryClientProvider>

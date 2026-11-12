@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link, useLocation, useParams } from "wouter";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { apiFetch, IS_LOCAL } from "@/lib/backend";
-import { isNativeApp } from "@/lib/save-file";
+import { usesShareSheet } from "@/lib/save-file";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -831,7 +831,7 @@ export default function TournamentPage() {
         token = (await res.json()).shareToken;
         queryClient.invalidateQueries({ queryKey: ["/api/tournaments", id] });
       }
-      if (token) navigate(`/live/${token}?tv=1`);
+      if (token) navigate(`/live/${token}/tv`);
     } catch (err: any) {
       onError(err);
     }
@@ -1001,13 +1001,13 @@ export default function TournamentPage() {
                     onClick={() => { if (!printResults(tournament)) toast({ title: "Allow pop-ups to print", variant: "destructive" }); }}
                     data-testid="button-print-results"
                   >
-                    <Printer className="w-4 h-4 mr-2" /> {isNativeApp() ? "Results page (to print)" : "Print results"}
+                    <Printer className="w-4 h-4 mr-2" /> {usesShareSheet() ? "Results page (to print)" : "Print results"}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => { if (!printBrackets(tournament)) toast({ title: "Allow pop-ups to print", variant: "destructive" }); }}
                     data-testid="menu-print-brackets"
                   >
-                    <Printer className="w-4 h-4 mr-2" /> {isNativeApp() ? "Bracket sheets (to print)" : "Print bracket sheets"}
+                    <Printer className="w-4 h-4 mr-2" /> {usesShareSheet() ? "Bracket sheets (to print)" : "Print bracket sheets"}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
